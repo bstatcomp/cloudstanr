@@ -11,21 +11,21 @@
 login <- function(email) {
   # password
   password <- ""
-  remember <- "y"
+  remember <- ""
 
   # get stored password from the keylist
   keylist <- key_list("cloudstanr")
   if (nrow(keylist) > 0) {
     # get password
-    has_password <- keylist %>% filter(username == "cloudstanr_pass")
-    if (nrow(has_password) > 0) {
-      password <- key_get("cloudstanr_pass", service="cloudstanr")
+    key <- keylist %>% filter(username == "password")
+    if (nrow(key) > 0) {
+      password <- key_get("password", service="cloudstanr")
     }
 
     # get remember
-    has_remember <- keylist %>% filter(username == "cloudstanr_remember")
-    if (nrow(has_remember) > 0) {
-      remember <- key_get("cloudstanr_remember", service="cloudstanr")
+    key <- keylist %>% filter(username == "remember")
+    if (nrow(key) > 0) {
+      remember <- key_get("remember", service="cloudstanr")
     }
   }
 
@@ -33,29 +33,41 @@ login <- function(email) {
   if (password == "") {
     # get password
     password <- getPass("Please enter your password:")
+  }
 
-    if (remember == "y") {
+  request <- POST("http://18.236.242.235:3000/api/v1.0/users/login",
+                  body = list(email=email,
+                              password=password),
+                  encode = "json",
+                  timeout(api_timeout))
+
+  if (request$status_code == 200) {
+    cat("Login successful!")
+
+    if (remember == "") {
       # would you like to remember
       remember <- tolower(readline("Would you like R to remember your password [y/n]? "))
 
       # yes
       if (remember == "y" | remember == "yes") {
         # store
-        key_set_with_value("cloudstanr_pass", password=password, service="cloudstanr")
-        key_set_with_value("cloudstanr_remember", password="y", service="cloudstanr")
+        key_set_with_value("password", password=password, service="cloudstanr")
+        key_set_with_value("remember", password="y", service="cloudstanr")
+      } else if (remember == "n" | remember == "N") {
+        key_set_with_value("remember", password="n", service="cloudstanr")
       }
     }
+
+    # store token and id
+    c <- content(request)
+    key_set_with_value("token", password=c$token, service="cloudstanr")
+    key_set_with_value("id", password=c$user$id, service="cloudstanr")
+  } else if (request$status_code == 401) {
+    cat("Wrong login credentials!")
+    clear_password()
+  } else {
+    cat("Something went wrong, please try again!")
   }
-
-  cat(password)
-  #request <- POST("http://18.236.242.235:3000/api/v1.0/users/login",
-  #                body = list(email=email,
-  #                            password="test1234"),
-  #                verbose(),
-  #                encode = "json",
-  #                timeout(3))
-
-  #return(request)
 }
 
 #' @title clear_password
@@ -67,16 +79,28 @@ clear_password <- function() {
   # delete password if stored
   keylist <- key_list("cloudstanr")
   if (nrow(keylist) > 0) {
-    # get password
-    has_password <- keylist %>% filter(username == "cloudstanr_pass")
-    if (nrow(has_password) > 0) {
-      key_delete("cloudstanr_pass", service="cloudstanr")
+    # delete password
+    key <- keylist %>% filter(username == "password")
+    if (nrow(key) > 0) {
+      key_delete("password", service="cloudstanr")
     }
 
-    # get remeber data
-    has_remember <- keylist %>% filter(username == "cloudstan_remember")
-    if (nrow(has_remember) > 0) {
-      key_delete("cloudstanr_remember", service="cloudstanr")
+    # delete remeber
+    key <- keylist %>% filter(username == "remember")
+    if (nrow(key) > 0) {
+      key_delete("remember", service="cloudstanr")
+    }
+
+    # delete id
+    key <- keylist %>% filter(username == "id")
+    if (nrow(key) > 0) {
+      key_delete("id", service="cloudstanr")
+    }
+
+    # delete token
+    key <- keylist %>% filter(username == "token")
+    if (nrow(key) > 0) {
+      key_delete("token", service="cloudstanr")
     }
   }
 }
