@@ -1,0 +1,15 @@
+Package: cloudstanr
+Type: Package
+Title: A Package for Interfacing the Cloudstan Platoform API
+Version: 0.1.0
+Authors@R:
+    c(person("Jure", "Demšar", , "jure.demsar@fri.uni-lj.si", c("cre", "aut")),
+    person("Rok", "Cešnovar", , "rok.cesnovar@fri.uni-lj.si", "aut"),
+    person("Erik", "Štrumbelj", , "erik.strumbelj@fri.uni-lj.si", "aut"))
+Description: This package can be used to fit your own Stan models on the Cloudstan platform. This way you do not need to have a local installation of Stan. 
+License: GPL (>=3)
+Encoding: UTF-8
+LazyData: true
+Imports:
+  httr
+RoxygenNote: 7.0.2
