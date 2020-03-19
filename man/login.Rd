@@ -7,8 +7,10 @@
 login(email)
 }
 \arguments{
-\item{email}{Email of you cloudstan account [string].}
+\item{email}{A string representing an email of you cloudstan account [""].}
+
+\item{query}{A boolean whether the entered password will be remebered [FALSE].}
 }
 \description{
-Functions for logging into Cloudstan API.
+Function for logging into the Cloudstan platform.
 }

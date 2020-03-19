@@ -11,5 +11,8 @@ License: GPL (>=3)
 Encoding: UTF-8
 LazyData: true
 Imports:
-  httr
+  httr,
+  keyring,
+  getPass,
+  tidyverse
 RoxygenNote: 7.0.2
