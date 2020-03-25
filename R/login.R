@@ -1,47 +1,54 @@
 #' @title login
 #' @description Function for logging into the Cloudstan platform.
-#' @import httr
-#' @import getPass
-#' @import keyring
 #' @import dplyr
+#' @import getPass
+#' @import httr
+#' @import keyring
 #' @export
 #' @param email A string representing an email of you cloudstan account [""].
 #' @param query A boolean whether the entered password will be remebered [FALSE].
 #'
-login <- function(email) {
-  # password
-  password <- ""
-  remember <- ""
-
-  # get stored password from the keylist
-  keylist <- key_list("cloudstanr")
-  if (nrow(keylist) > 0) {
-    # get password
-    key <- keylist %>% filter(username == "password")
-    if (nrow(key) > 0) {
-      password <- key_get("password", service="cloudstanr")
-    }
-
-    # get remember
-    key <- keylist %>% filter(username == "remember")
-    if (nrow(key) > 0) {
-      remember <- key_get("remember", service="cloudstanr")
-    }
-  }
-
-  # if password was not stored query
+login <- function(email, password="") {
   if (password == "") {
-    # get password
-    password <- getPass("Please enter your password:")
+    # remember pass?
+    remember <- ""
+
+    # get stored data from the keylist
+    keylist <- key_list("cloudstanr")
+    if (nrow(keylist) > 0) {
+      # get password
+      key <- keylist %>% filter(username == "password")
+      if (nrow(key) > 0) {
+        password <- key_get("password", service="cloudstanr")
+      }
+
+      # get remember
+      key <- keylist %>% filter(username == "remember")
+      if (nrow(key) > 0) {
+        remember <- key_get("remember", service="cloudstanr")
+      }
+    }
+
+    # if password was not stored query
+    if (password == "") {
+      # get password
+      password <- getPass("Please enter your password:")
+    }
+  } else {
+    remember = "n"
   }
 
-  request <- POST("http://18.236.242.235:3000/api/v1.0/users/login",
+  # info
+  cat("Logging in ...")
+
+  request <- POST(get_endpoint("users/login"),
                   body = list(email=email,
                               password=password),
                   encode = "json",
                   timeout(api_timeout))
 
   if (request$status_code == 200) {
+    # info
     cat("Login successful!")
 
     if (remember == "") {
@@ -63,19 +70,24 @@ login <- function(email) {
     key_set_with_value("token", password=c$token, service="cloudstanr")
     key_set_with_value("id", password=c$user$id, service="cloudstanr")
   } else if (request$status_code == 401) {
+    # info
     cat("Wrong login credentials!")
-    clear_password()
+    logout()
   } else {
+    # info
     cat("Something went wrong, please try again!")
   }
 }
 
-#' @title clear_password
+#' @title logout
 #' @description Function for removing the stored password.
-#' @import keyring
 #' @import dplyr
+#' @import keyring
 #' @export
-clear_password <- function() {
+logout <- function() {
+  # info
+  cat("Logging out ...")
+
   # delete password if stored
   keylist <- key_list("cloudstanr")
   if (nrow(keylist) > 0) {
