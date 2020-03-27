@@ -5,8 +5,8 @@
 #' @import httr
 #' @import keyring
 #' @export
-#' @param email A string representing an email of you cloudstan account [""].
-#' @param query A boolean whether the entered password will be remebered [FALSE].
+#' @param email A string representing an email of you cloudstan account.
+#' @param password Password behind the providede email account. [""].
 #'
 login <- function(email, password="") {
   if (password == "") {
@@ -39,7 +39,7 @@ login <- function(email, password="") {
   }
 
   # info
-  cat("Logging in ...")
+  cat("Logging in ...\n")
 
   request <- POST(get_endpoint("users/login"),
                   body = list(email=email,
@@ -49,7 +49,7 @@ login <- function(email, password="") {
 
   if (request$status_code == 200) {
     # info
-    cat("Login successful!")
+    cat("Login successful!\n")
 
     if (remember == "") {
       # would you like to remember
@@ -71,11 +71,11 @@ login <- function(email, password="") {
     key_set_with_value("id", password=c$user$id, service="cloudstanr")
   } else if (request$status_code == 401) {
     # info
-    cat("Wrong login credentials!")
+    cat("Wrong login credentials!\n")
     logout()
   } else {
     # info
-    cat("Something went wrong, please try again!")
+    cat("Something went wrong, please try again!\n")
   }
 }
 
@@ -86,7 +86,7 @@ login <- function(email, password="") {
 #' @export
 logout <- function() {
   # info
-  cat("Logging out ...")
+  cat("Logging out ...\n")
 
   # delete password if stored
   keylist <- key_list("cloudstanr")

@@ -1,6 +1,7 @@
 # global settings
 api_URL <- "http://18.236.242.235:3000/api/v1.0/"
-api_timeout <- 10
+api_timeout <- 30
+status_refresh_rate <- 5
 
 # get endpoint
 get_endpoint <- function(endpoint) {

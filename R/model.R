@@ -3,13 +3,13 @@
 #' @import httr
 #' @import keyring
 #' @export
-#' @param email A string representing the name of the model [""].
+#' @param name A string representing the name of the model.
 #'
 create_model <- function(name) {
   token <- get_token()
 
   # info
-  cat(paste0("Creating model ", name, " ..."))
+  cat(paste0("Creating model ", name, " ...\n"))
 
   request <- POST(get_endpoint("models"),
                   add_headers(Authorization=token),
@@ -19,14 +19,14 @@ create_model <- function(name) {
 
   if (request$status_code == 201) {
     # info
-    cat("Model created!")
+    cat("Model created!\n")
     return(content(request)$model_id)
   } else if (request$status_code == 401) {
     # info
-    cat("Wrong credentials, please login!")
+    cat("Wrong credentials, please login!\n")
   } else {
     # info
-    cat("Something went wrong, please try again!")
+    cat("Something went wrong, please try again!\n")
   }
 }
 
@@ -42,7 +42,7 @@ get_models <- function() {
   token <- get_token()
 
   # info
-  cat("Acquiring your models ...")
+  cat("Acquiring your models ...\n")
 
   request <- GET(get_endpoint("models"),
            add_headers(Authorization=token),
@@ -50,24 +50,24 @@ get_models <- function() {
 
   if (request$status_code == 200) {
     # info
-    cat("Model acquisition successful!")
+    cat("Model acquisition successful!\n")
 
     c <- content(request)
 
-    # cast to tibble
+    # cast to data.frame
     models <- NULL
 
     for (model in c$models) {
-      models <- rbind(models, tibble(name=model$name, id=model$id))
+      models <- rbind(models, data.frame(name=model$name, id=model$id))
     }
 
     return(models)
   } else if (request$status_code == 401) {
     # info
-    cat("Wrong credentials, please login!")
+    cat("Wrong credentials, please login!\n")
   } else {
     # info
-    cat("Something went wrong, please try again!")
+    cat("Something went wrong, please try again!\n")
   }
 }
 
@@ -77,12 +77,13 @@ get_models <- function() {
 #' @import httr
 #' @import keyring
 #' @export
+#' @param id A string representing the id of the model.
 #'
 get_model_details <- function(id) {
   token <- get_token()
 
   # info
-  cat("Getting model's details ...")
+  cat("Getting model's details ...\n")
 
   request <- GET(get_endpoint(paste0("models/", id)),
                  add_headers(Authorization=token),
@@ -90,15 +91,15 @@ get_model_details <- function(id) {
 
   if (request$status_code == 200) {
     # info
-    cat("Model details successfully acquired!")
+    cat("Model details successfully acquired!\n")
 
     return(content(request))
   } else if (request$status_code == 401) {
     # info
-    cat("Wrong credentials, please login!")
+    cat("Wrong credentials, please login!\n")
   } else {
     # info
-    cat("Something went wrong, please try again!")
+    cat("Something went wrong, please try again!\n")
   }
 }
 
@@ -108,12 +109,13 @@ get_model_details <- function(id) {
 #' @import httr
 #' @import keyring
 #' @export
+#' @param id A string representing the id of the model.
 #'
 delete_model <- function(id) {
   token <- get_token()
 
   # info
-  cat("Deleting the model ...")
+  cat("Deleting the model ...\n")
 
   request <- DELETE(get_endpoint(paste0("models/", id)),
                  add_headers(Authorization=token),
@@ -121,15 +123,13 @@ delete_model <- function(id) {
 
   if (request$status_code == 200) {
     # info
-    cat("Model successfully deleted!")
-
-    return(content(request))
+    cat("Model successfully deleted!\n")
   } else if (request$status_code == 401) {
     # info
-    cat("Wrong credentials, please login!")
+    cat("Wrong credentials, please login!\n")
   } else {
     # info
-    cat("Something went wrong, please try again!")
+    cat("Something went wrong, please try again!\n")
   }
 }
 
@@ -139,12 +139,16 @@ delete_model <- function(id) {
 #' @import httr
 #' @import keyring
 #' @export
+#' @param id A string representing the id of the model.
+#' @param code A string representing the code of the model or a filename that contains the model's code [""].
+#' @param data A list containing the input data [NULL].
+#' @param name A string representing the new name of the model [""].
 #'
-edit_model <- function(id, code=NULL, data="", name="") {
+edit_model <- function(id, code="", data=NULL, name="") {
   token <- get_token()
 
   # info
-  cat("Uploading model's code and data ...")
+  cat("Uploading model's code and data ...\n")
 
   model_parameters <- list()
 
@@ -176,68 +180,14 @@ edit_model <- function(id, code=NULL, data="", name="") {
 
   if (request$status_code == 200) {
     # info
-    cat("Model successfully updated!")
+    cat("Model successfully updated!\n")
     return(content(request))
   } else if (request$status_code == 401) {
     # info
-    cat("Wrong credentials, please login!")
+    cat("Wrong credentials, please login!\n")
   } else {
     # info
-    cat("Something went wrong, please try again!")
-  }
-}
-
-
-#' @title edit_model
-#' @description Edit a model.
-#' @import httr
-#' @import keyring
-#' @export
-#'
-edit_model <- function(id, code=NULL, data="", name="") {
-  token <- get_token()
-
-  # info
-  cat("Uploading model's code and data ...")
-
-  model_parameters <- list()
-
-  # code
-  if (code != "") {
-    # if code is a file load from file
-    if (file.exists(code)) {
-      code <- readChar(code, file.info(code)$size)
-    }
-
-    model_parameters$code <- code
-  }
-
-  # data
-  if (!is.null(data)) {
-    model_parameters$data <- data
-  }
-
-  # name
-  if (name != "") {
-    model_parameters$name <- name
-  }
-
-  request <- POST(get_endpoint(paste0("models/", id)),
-                  add_headers(Authorization=token),
-                  body = model_parameters,
-                  encode = "json",
-                  timeout(api_timeout))
-
-  if (request$status_code == 200) {
-    # info
-    cat("Model successfully updated!")
-    return(content(request))
-  } else if (request$status_code == 401) {
-    # info
-    cat("Wrong credentials, please login!")
-  } else {
-    # info
-    cat("Something went wrong, please try again!")
+    cat("Something went wrong, please try again!\n")
   }
 }
 
@@ -247,12 +197,14 @@ edit_model <- function(id, code=NULL, data="", name="") {
 #' @import httr
 #' @import keyring
 #' @export
+#' @param id A string representing the id of the model.
+#' @param compile_time An integer representing the amount of seconds we will wait before terminating the compilation process [300].
 #'
 compile_model <- function(id, compile_time=300) {
   token <- get_token()
 
   # info
-  cat("Compiling the model ...")
+  cat("Compiling the model ...\n")
 
   request <- POST(get_endpoint(paste0("models/", id, "/compile")),
                   add_headers(Authorization=token),
@@ -260,13 +212,17 @@ compile_model <- function(id, compile_time=300) {
 
   if (request$status_code == 200) {
     # info
-    cat("Model successfully compiled!")
+    cat("Model successfully compiled!\n")
     return(content(request))
   } else if (request$status_code == 401) {
     # info
-    cat("Wrong credentials, please login!")
-  } else {
+    cat("Wrong credentials, please login!\n")
+  } else if (request$status_code == 400) {
+    c <- content(request)
     # info
-    cat("Something went wrong, please try again!")
+    cat(c$message)
+  }else {
+    # info
+    cat("Something went wrong, please try again!\n")
   }
 }

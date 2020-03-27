@@ -4,12 +4,12 @@
 \alias{login}
 \title{login}
 \usage{
-login(email)
+login(email, password = "")
 }
 \arguments{
-\item{email}{A string representing an email of you cloudstan account [""].}
+\item{email}{A string representing an email of you cloudstan account.}
 
-\item{query}{A boolean whether the entered password will be remebered [FALSE].}
+\item{password}{Password behind the providede email account. [""].}
 }
 \description{
 Function for logging into the Cloudstan platform.
