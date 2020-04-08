@@ -15,7 +15,7 @@ create_model <- function(name) {
                   add_headers(Authorization=token),
                   body = list(name=name),
                   encode = "json",
-                  timeout(api_timeout))
+                  timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 201) {
     # info
@@ -46,7 +46,7 @@ get_models <- function() {
 
   request <- GET(get_endpoint("models"),
            add_headers(Authorization=token),
-           timeout(api_timeout))
+           timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info
@@ -87,7 +87,7 @@ get_model_details <- function(id) {
 
   request <- GET(get_endpoint(paste0("models/", id)),
                  add_headers(Authorization=token),
-                 timeout(api_timeout))
+                 timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info
@@ -119,7 +119,7 @@ delete_model <- function(id) {
 
   request <- DELETE(get_endpoint(paste0("models/", id)),
                  add_headers(Authorization=token),
-                 timeout(api_timeout))
+                 timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info
@@ -176,7 +176,7 @@ edit_model <- function(id, code="", data=NULL, name="") {
                     add_headers(Authorization=token),
                     body = model_parameters,
                     encode = "json",
-                    timeout(api_timeout))
+                    timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info

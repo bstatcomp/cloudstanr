@@ -1,5 +1,5 @@
 # install from github
-devtools::install_github("bstatcomp/cloudstanr")
+# devtools::install_github("bstatcomp/cloudstanr")
 
 library(cloudstanr)
 library(ggplot2)
