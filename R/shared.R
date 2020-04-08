@@ -1,11 +1,25 @@
 # global settings
-api_URL <- "http://18.236.242.235:3000/api/v1.0/"
-api_timeout <- 30
-status_refresh_rate <- 5
+.cloudstanr <- new.env(parent = emptyenv())
+.cloudstanr$API_URL <- NULL
+.cloudstanr$API_TIMEOUT <- 30
+.cloudstanr$API_STATUS_REFRESH_RATE < -5
+
+cloudstanr_default_api_url <- function() {
+  "http://18.236.242.235:3000/api/v1.0/"
+}
+
+cloudstanr_initialize <- function() {
+  api_url <- Sys.getenv("CLOUDSTANR_API_URL")
+  if (isTRUE(nzchar(api_url))) {
+    .cloudstanr$API_URL <- api_url
+  } else {
+    .cloudstanr$API_URL <- cloudstanr_default_api_url()
+  }
+}
 
 # get endpoint
 get_endpoint <- function(endpoint) {
-  return(paste0(api_URL, endpoint))
+  return(paste0(.cloudstanr$API_URL, endpoint))
 }
 
 # get the token
@@ -20,6 +34,5 @@ get_token <- function() {
       token <- key_get("token", service="cloudstanr")
     }
   }
-
   return(token)
 }
