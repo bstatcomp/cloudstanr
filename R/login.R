@@ -45,7 +45,7 @@ login <- function(email, password="") {
                   body = list(email=email,
                               password=password),
                   encode = "json",
-                  timeout(api_timeout))
+                  timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info

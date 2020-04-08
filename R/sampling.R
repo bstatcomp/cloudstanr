@@ -19,7 +19,7 @@ sample_model <- function(id, warmup=1000, samples=1000, async=FALSE) {
                   body = list(num_warmup=warmup,
                               num_samples=samples),
                   encode = "json",
-                  timeout(api_timeout))
+                  timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info
@@ -70,7 +70,7 @@ get_sampling_status <- function(id, async=FALSE) {
 
   request <- GET(get_endpoint(paste0("models/", id, "/fit")),
                   add_headers(Authorization=token),
-                  timeout(api_timeout))
+                  timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info
@@ -109,7 +109,7 @@ get_samples <- function(id) {
 
   request <- GET(get_endpoint(paste0("models/", id, "/fit/samples")),
                  add_headers(Authorization=token),
-                 timeout(api_timeout))
+                 timeout(.cloudstanr$API_TIMEOUT))
 
   if (request$status_code == 200) {
     # info
