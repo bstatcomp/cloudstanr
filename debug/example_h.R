@@ -24,15 +24,16 @@ details <- get_model_details(id=model_id)
 details
 
 # add model code, can be a string of code or the model's filename
-code <- "model.stan"
+code <- "h_model.stan"
 
 # change the name of the model?
-name <- "Normal model"
+name <- "Hierarchical normal model"
 
 # add model data
 n <- 100
-y <- rnorm(n, 200, 50)
-data <- list(n=n, y=y)
+m <- 10
+y <- matrix( rnorm(m*n,mean=200,sd=50), m, n)
+data <- list(n=n, m=m, y=y)
 
 details <- edit_model(id=model_id, code=code, data=data, name=name)
 details
