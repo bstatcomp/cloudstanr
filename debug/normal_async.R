@@ -1,5 +1,5 @@
 # install from github
-devtools::install_github("bstatcomp/cloudstanr")
+# devtools::install_github("bstatcomp/cloudstanr")
 
 library(cloudstanr)
 library(ggplot2)
@@ -24,16 +24,15 @@ details <- get_model_details(id=model_id)
 details
 
 # add model code, can be a string of code or the model's filename
-code <- "h_model.stan"
+code <- "model.stan"
 
 # change the name of the model?
-name <- "Hierarchical normal model"
+name <- "Normal model"
 
 # add model data
 n <- 100
-m <- 10
-y <- matrix( rnorm(m*n,mean=200,sd=50), m, n)
-data <- list(n=n, m=m, y=y)
+y <- rnorm(n, 200, 50)
+data <- list(n=n, y=y)
 
 details <- edit_model(id=model_id, code=code, data=data, name=name)
 details
@@ -42,13 +41,8 @@ details
 details <- compile_model(id=model_id)
 details$compiled
 
-# sync (blocking) sampling - not working currently, server times out
-result <- sample_model(id=model_id, warmup=10000, samples=100000)
-samples <- result$samples
-
 # async (non-blocking) sampling
-# start sampling
-#result <- sample_model(id=model_id, warmup=1000000, samples=1000000, async=TRUE)
+result <- sample_model(id=model_id, warmup=5000, samples=15000, async=TRUE)
 
 # check status
 status <- get_sampling_status(id=model_id)
@@ -59,7 +53,7 @@ result <- get_samples(id=model_id)
 samples <- result$samples
 
 # traceplot and results plot
-data <- data.frame(mu=as.numeric(samples$mu), sigma=as.numeric(samples$sigma))
+data <- data.frame(mu=samples$mu, sigma=samples$sigma)
 data$ix <- 1:nrow(data)
 
 # traceplots

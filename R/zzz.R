@@ -6,5 +6,3 @@
 .onLoad <- function(...) {
   cloudstanr_initialize()
 }
-
-

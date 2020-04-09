@@ -2,7 +2,7 @@
 .cloudstanr <- new.env(parent = emptyenv())
 .cloudstanr$API_URL <- NULL
 .cloudstanr$API_TIMEOUT <- 30
-.cloudstanr$API_STATUS_REFRESH_RATE < -5
+.cloudstanr$API_STATUS_REFRESH_RATE <- 3
 
 cloudstanr_default_api_url <- function() {
   "http://18.236.242.235:3000/api/v1.0/"
