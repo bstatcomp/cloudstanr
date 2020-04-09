@@ -1,7 +1,7 @@
 Package: cloudstanr
 Type: Package
 Title: A Package for Interfacing the Cloudstan API
-Version: 0.1
+Version: 0.2
 Authors@R:
     c(person("Jure", "Demšar", , "jure.demsar@fri.uni-lj.si", c("cre", "aut")),
     person("Rok", "Češnovar", , "rok.cesnovar@fri.uni-lj.si", "aut"),

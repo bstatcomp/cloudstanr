@@ -1,5 +1,5 @@
 # install from github
-devtools::install_github("bstatcomp/cloudstanr")
+# devtools::install_github("bstatcomp/cloudstanr")
 
 library(cloudstanr)
 library(ggplot2)
@@ -9,6 +9,7 @@ login(email="jure@cloudstan.com", password="test1234")
 
 # check my existing models
 models <- get_models()
+models
 
 # delete all previous models
 #for (model_id in models$id) {
@@ -18,13 +19,12 @@ models <- get_models()
 # create a new model
 model_id <- create_model("New model")
 
-# get its
+# get its details
 details <- get_model_details(id=model_id)
 details
 
 # add model code, can be a string of code or the model's filename
-code <- "./debug/model.stan"
-#code <- "model.stan"
+code <- "model.stan"
 
 # change the name of the model?
 name <- "Normal model"
@@ -41,13 +41,8 @@ details
 details <- compile_model(id=model_id)
 details$compiled
 
-# sync (blocking) sampling - not working currently, server times out
-#result <- sample_model(id=model_id, warmup=1000000, samples=1000000)
-#samples <- result$samples
-
 # async (non-blocking) sampling
-# start sampling
-result <- sample_model(id=model_id, warmup=1000000, samples=1000000, async=TRUE)
+result <- sample_model(id=model_id, warmup=5000, samples=15000, async=TRUE)
 
 # check status
 status <- get_sampling_status(id=model_id)
@@ -58,7 +53,7 @@ result <- get_samples(id=model_id)
 samples <- result$samples
 
 # traceplot and results plot
-data <- data.frame(mu=as.numeric(samples$mu), sigma=as.numeric(samples$sigma))
+data <- data.frame(mu=samples$mu, sigma=samples$sigma)
 data$ix <- 1:nrow(data)
 
 # traceplots
