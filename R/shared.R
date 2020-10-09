@@ -5,7 +5,7 @@
 .cloudstanr$API_STATUS_REFRESH_RATE <- 3
 
 cloudstanr_default_api_url <- function() {
-  "http://18.236.242.235:3000/api/v1.0/"
+  "http://34.208.56.19:3000/api/v1.0/"
 }
 
 cloudstanr_initialize <- function() {
